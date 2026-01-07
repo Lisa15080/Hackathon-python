@@ -1,7 +1,7 @@
 from datetime import datetime
 from django.db import models
 from django.core.exceptions import ValidationError
-from users.models import User
+from django.contrib.auth.models import User
 
 
 class Book(models.Model):
@@ -48,12 +48,7 @@ class Book(models.Model):
         default=STATUS_NOT_STARTED,
         verbose_name="Статус чтения"
     )
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        related_name='books',
-        verbose_name="Пользователь, добавивший книгу"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='books')
 
     class Meta:
         verbose_name = "Книга"
