@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+
+{% block title %}Мой профиль{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Мой профиль</h4>
+            </div>
+            <div class="card-body">
+                {% if messages %}
+                <div class="alert alert-success">
+                    {% for message in messages %}
+                        {{ message }}
+                    {% endfor %}
+                </div>
+                {% endif %}
+
+                <form method="post">
+                    {% csrf_token %}
+
+                    {% if form.errors %}
+                    <div class="alert alert-danger">
+                        <ul class="mb-0">
+                            {% for field in form %}
+                                {% for error in field.errors %}
+                                    <li>{{ field.label }}: {{ error }}</li>
+                                {% endfor %}
+                            {% endfor %}
+                        </ul>
+                    </div>
+                    {% endif %}
+
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Имя</label>
+                            {{ form.first_name }}
+                        </div>
+
+                        <div class="col-md-6 mb-3">
+                            <label class="form-label">Фамилия</label>
+                            {{ form.last_name }}
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label">Email</label>
+                        {{ form.email }}
+                    </div>
+
+                    <div class="mb-4">
+                        <p class="text-muted mb-1">
+                            <strong>Дата регистрации:</strong> {{ user.date_joined|date:"d.m.Y H:i" }}
+                        </p>
+                        <p class="text-muted mb-0">
+                            <strong>Последний вход:</strong> {{ user.last_login|date:"d.m.Y H:i" }}
+                        </p>
+                    </div>
+
+                    <div class="d-flex justify-content-between">
+                        <button type="submit" class="btn btn-primary">Сохранить изменения</button>
+                        <a href="{% url 'book_list' %}" class="btn btn-outline-secondary">Назад к книгам</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

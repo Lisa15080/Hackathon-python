@@ -1,0 +1,70 @@
+{% extends 'base.html' %}
+
+{% block title %}Пользователи{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Пользователи системы</h2>
+    <span class="badge bg-primary">{{ users|length }} пользователей</span>
+</div>
+
+<div class="row">
+    {% for user in users %}
+    <div class="col-md-6 col-lg-4 mb-4">
+        <div class="card h-100">
+            <div class="card-body">
+                <div class="d-flex align-items-center mb-3">
+                    <div class="bg-light rounded-circle d-flex align-items-center justify-content-center me-3"
+                         style="width: 50px; height: 50px;">
+                        <span class="text-muted">
+                            {{ user.first_name|first|default:"А" }}{{ user.last_name|first|default:"П" }}
+                        </span>
+                    </div>
+                    <div>
+                        <h5 class="card-title mb-0">{{ user.get_full_name|default:user.username }}</h5>
+                        <small class="text-muted">@{{ user.username }}</small>
+                    </div>
+                </div>
+
+                <p class="card-text">
+                    <small class="text-muted">
+                        {{ user.email|default:"Email не указан"|truncatechars:25 }}
+                    </small>
+                </p>
+
+                <div class="card-text mb-2">
+                    <small class="text-muted d-block">
+                        <i class="bi bi-calendar"></i> Зарегистрирован: {{ user.date_joined|date:"d.m.Y" }}
+                    </small>
+                </div>
+
+                {% if user.is_staff %}
+                <span class="badge bg-warning text-dark">Персонал</span>
+                {% endif %}
+
+                {% if user.is_superuser %}
+                <span class="badge bg-danger">Администратор</span>
+                {% endif %}
+            </div>
+            <div class="card-footer bg-transparent">
+                <a href="{% url 'users:user_detail' user.pk %}" class="btn btn-outline-primary btn-sm">
+                    Просмотреть профиль
+                </a>
+            </div>
+        </div>
+    </div>
+    {% empty %}
+    <div class="col-12">
+        <div class="alert alert-info">
+            Пользователей пока нет.
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<div class="mt-4">
+    <a href="{% url 'book_list' %}" class="btn btn-secondary">
+        ← Назад к книгам
+    </a>
+</div>
+{% endblock %}
