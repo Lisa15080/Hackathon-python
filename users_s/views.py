@@ -4,6 +4,12 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from .forms import UserRegisterForm, UserUpdateForm
 
+def home(request):
+    """Главная страница: список всех пользователей + кол-во книг."""
+    users = User.objects.annotate(
+        book_count=Count('books')
+    ).order_by('username')
+    return render(request, 'users/home.html', {'users': users})
 
 def register(request):
     """Регистрация нового пользователя."""
@@ -39,3 +45,11 @@ def profile(request):
         form = UserUpdateForm(instance=request.user)
 
     return render(request, 'users/profile.html', {'form': form})
+
+def user_detail(request, pk):
+    user = get_object_or_404(User, pk=pk)
+    books = user.books.all()
+    return render(request, 'users/user_detail.html', {
+        'profile_user': user,
+        'books': books
+    })
