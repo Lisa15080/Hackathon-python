@@ -1,0 +1,43 @@
+{% extends 'base.html' %}
+
+{% block title %}Каталог {{ profile_user.username }}{% endblock %}
+
+{% block content %}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1>📚 Книги пользователя: <strong>{{ profile_user.username }}</strong></h1>
+    {% if user.is_authenticated and user == profile_user %}
+        <a href="{% url 'book_list' %}" class="btn btn-primary">Мой каталог</a>
+    {% endif %}
+</div>
+
+{% if books %}
+    <div class="row row-cols-1 g-3">
+    {% for book in books %}
+        <div class="col">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ book.title }}</h5>
+                    <p class="card-text">
+                        <strong>Автор:</strong> {{ book.author }}<br>
+                        <strong>Год:</strong> {{ book.year }}<br>
+                        <strong>Жанр:</strong> {{ book.genre }}<br>
+                        <strong>Статус:</strong> 
+                        {% if book.status == 'not_started' %}⏳ Не начата
+                        {% elif book.status == 'reading' %}📖 Читаю
+                        {% elif book.status == 'read' %}✅ Прочитана
+                        {% endif %}
+                    </p>
+                    {% if book.description %}
+                        <p class="card-text"><em>{{ book.description|truncatewords:30 }}</em></p>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    {% endfor %}
+    </div>
+{% else %}
+    <div class="alert alert-info">
+        У пользователя {{ profile_user.username }} пока нет книг.
+    </div>
+{% endif %}
+{% endblock %}
