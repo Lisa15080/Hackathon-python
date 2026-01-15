@@ -3,7 +3,7 @@
 Участники: Баранова Елизавета, Родина Виктория, Шукалович Екатерина
 
 Проект запускается так:
-1) Устанавливаются зависимости (pip install -r requirements.txt)
+1) Устанавливаем зависимости (pip install -r requirements.txt)
 2) Создаем БД (python3 manage.py migrate)
 3) Запускаем сервер (python3 manage.py runserver)
 4) Далее мы получаем сообщение об успешном запуске сервера: "Django version 4.2.27, using settings 'Hackathon_python.settings'
