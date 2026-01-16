@@ -7,7 +7,9 @@ from .forms import BookForm
 
 @login_required
 def book_list(request):
-    """Список книг ТЕКУЩЕГО пользователя."""
+    """
+    Отображает список книг, принадлежащих текущему авторизованному пользователю.
+    """
     books = Book.objects.filter(user=request.user).order_by('title')
     return render(request, 'books/book_list.html', {
         'books': books,
@@ -17,6 +19,13 @@ def book_list(request):
 
 @login_required
 def book_create(request):
+    """
+    Обрабатывает создание новой книги для текущего пользователя.
+
+    При POST-запросе создаётся и валидируется форма. Если данные корректны,
+    книга сохраняется с привязкой к текущему пользователю.
+    При GET-запросе отображается пустая форма.
+    """
     if request.method == 'POST':
         form = BookForm(request.POST)
         if form.is_valid():
@@ -35,6 +44,12 @@ def book_create(request):
 
 @login_required
 def book_update(request, pk):
+    """
+    Обрабатывает редактирование существующей книги.
+
+    При POST-запросе обновляет данные книги, если форма валидна.
+    При GET-запросе отображает форму с текущими данными книги.
+    """
     book = get_object_or_404(Book, pk=pk, user=request.user)
     if request.method == 'POST':
         form = BookForm(request.POST, instance=book)
@@ -52,6 +67,12 @@ def book_update(request, pk):
 
 @login_required
 def book_delete(request, pk):
+    """
+    Обрабатывает удаление книги.
+    При POST-запросе книга удаляется,
+    и пользователь перенаправляется на список книг. При GET-запросе
+    отображается страница подтверждения удаления.
+    """
     book = get_object_or_404(Book, pk=pk, user=request.user)
     if request.method == 'POST':
         book.delete()
@@ -59,9 +80,17 @@ def book_delete(request, pk):
         return redirect('book_list')  
     return render(request, 'books/book_confirm_delete.html', {'book': book})
 
+
 @login_required
 def update_book_status(request, pk, status):
-    """Обновление статуса книги без полной формы."""
+    """
+    Быстрое обновление статуса чтения книги без открытия полной формы.
+
+    Принимает PK книги и строковый статус (например, 'read').
+    Проверяет, что статус допустим (существует в STATUS_CHOICES),
+    обновляет его и сохраняет объект. После этого перенаправляет
+    пользователя обратно к списку книг.
+    """
     book = get_object_or_404(Book, pk=pk, user=request.user)
     
     valid_statuses = dict(Book.STATUS_CHOICES).keys()
