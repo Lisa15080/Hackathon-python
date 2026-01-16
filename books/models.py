@@ -6,19 +6,22 @@ from django.contrib.auth.models import User
 
 class Book(models.Model):
     """
-    Класс для представления книги в каталоге.
+    Модель книги в персональном каталоге пользователя.
     """
 
+    # Константы для вариантов статуса чтения
     STATUS_NOT_STARTED = 'not_started'
     STATUS_READING = 'reading'
     STATUS_READ = 'read'
 
+    # Список допустимых значений для поля status с отображаемыми метками
     STATUS_CHOICES = [
         (STATUS_NOT_STARTED, 'Не начата'),
         (STATUS_READING, 'Читаю'),
         (STATUS_READ, 'Прочитана'),
     ]
 
+    # Основные поля модели
     title = models.CharField(
         max_length=200,
         verbose_name="Название",
@@ -48,18 +51,27 @@ class Book(models.Model):
         default=STATUS_NOT_STARTED,
         verbose_name="Статус чтения"
     )
+    # Привязка книги к пользователю: при удалении пользователя все его книги удаляются
     user = models.ForeignKey(User, on_delete=models.CASCADE, related_name='books')
 
     class Meta:
         verbose_name = "Книга"
         verbose_name_plural = "Книги"
-        ordering = ['title']
+        ordering = ['title']  # Сортировка по названию по умолчанию
 
     def __str__(self):
+        """Возвращает читаемое строковое представление книги."""
         return f"{self.title} — {self.author} ({self.year})"
 
     def clean(self):
-        """Кастомная валидация полей."""
+        """
+        Выполняет кастомную валидацию полей модели перед сохранением.
+
+        Проверяет:
+        - Название: не пустое и минимум 1 непробельный символ.
+        - Автор и жанр: минимум 2 непробельных символа.
+        - Год издания: в диапазоне от 1 до текущего года (включительно).
+        """
         if not self.title or len(self.title.strip()) < 1:
             raise ValidationError({'title': "Название книги не может быть пустым."})
 
@@ -74,6 +86,11 @@ class Book(models.Model):
             raise ValidationError({'year': f"Год издания должен быть от 1 до {current_year}."})
 
     def save(self, *args, **kwargs):
-        """Автоматическая валидация при сохранении."""
+        """
+        Переопределённый метод сохранения.
+
+        Автоматически вызывает full_clean(), который включает стандартную
+        валидацию Django и кастомную валидацию из метода clean().
+        """
         self.full_clean()
         super().save(*args, **kwargs)
