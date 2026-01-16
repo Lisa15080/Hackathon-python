@@ -94,3 +94,5 @@ class Book(models.Model):
         """
         self.full_clean()
         super().save(*args, **kwargs)
+        self.full_clean()
+        super().save(*args, **kwargs)
